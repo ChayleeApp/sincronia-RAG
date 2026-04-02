@@ -28,7 +28,7 @@ export default function LoginPage() {
     try {
       await login(username, password)
       localStorage.setItem("username", username)
-      router.push("/dashboard")
+      window.location.href = "/dashboard"
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro ao fazer login"
       setError(message)
