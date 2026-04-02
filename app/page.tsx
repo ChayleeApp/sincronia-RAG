@@ -14,7 +14,7 @@ export default function Home() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Network className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">GraphRAG</span>
+            <span className="text-xl font-bold text-foreground">CronRag</span>
           </div>
           <div className="flex gap-3">
             <Link href="/login">
@@ -98,7 +98,7 @@ export default function Home() {
       <section className="border-t border-border bg-muted/50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-12 text-balance">
-            Por que escolher GraphRAG?
+            Por que escolher CronRag?
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="flex gap-4">
@@ -149,7 +149,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border bg-muted/30 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-muted-foreground text-sm">
-          <p>&copy; 2025 GraphRAG. Todos os direitos reservados.</p>
+          <p>&copy; 2025 CronRag. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

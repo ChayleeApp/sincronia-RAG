@@ -93,7 +93,7 @@ export default function Dashboard() {
               </div>
             ) : (
               <div>
-                <h1 className="text-lg font-bold text-foreground">GraphRAG</h1>
+                <h1 className="text-lg font-bold text-foreground">CronRag</h1>
                 <p className="text-xs text-muted-foreground">Dashboard</p>
               </div>
             )}

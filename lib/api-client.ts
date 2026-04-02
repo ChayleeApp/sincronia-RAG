@@ -1,4 +1,5 @@
-const API_BASE_URL = "/api"
+const rawUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.sincron.ia.br"
+const API_BASE_URL = `${rawUrl.replace(/\/+$/, "")}/api/v1`
 
 let authToken: string | null = null
 let isRedirecting = false  // Flag para evitar loop de redirects
@@ -63,12 +64,13 @@ export const apiClient = {
   },
 
   async login(username: string, password: string) {
+    const formData = new FormData()
+    formData.append("username", username)
+    formData.append("password", password)
+
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
+      body: formData,
     })
 
     if (!response.ok) {
@@ -85,7 +87,7 @@ export const apiClient = {
   },
 
   async listDocuments() {
-    const response = await fetch(`${API_BASE_URL}/documents`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/documents`, {
       headers: await this.getHeaders(),
     })
     return checkResponse(response, "Falha ao listar documentos")
@@ -98,7 +100,7 @@ export const apiClient = {
     // Para upload de arquivo, não definimos Content-Type manualmente (o browser define com boundary)
     const headers = await this.getHeaders(null)
 
-    const response = await fetch(`${API_BASE_URL}/upload`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/upload`, {
       method: "POST",
       headers,
       body: formData,
@@ -108,7 +110,7 @@ export const apiClient = {
   },
 
   async deleteDocument(documentId: string) {
-    const response = await fetch(`${API_BASE_URL}/documents/${documentId}`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/documents/${documentId}`, {
       method: "DELETE",
       headers: await this.getHeaders(),
     })
@@ -117,7 +119,7 @@ export const apiClient = {
   },
 
   async processDocument(documentId: string, model: string, type: string = "generic") {
-    const response = await fetch(`${API_BASE_URL}/documents/process`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/process`, {
       method: "POST",
       headers: await this.getHeaders(),
       body: JSON.stringify({ document_id: documentId, model, doc_type: type }),
@@ -132,7 +134,7 @@ export const apiClient = {
       body.document_id = document_id
     }
 
-    const response = await fetch(`${API_BASE_URL}/query`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/query`, {
       method: "POST",
       headers: await this.getHeaders(),
       body: JSON.stringify(body),
@@ -142,28 +144,28 @@ export const apiClient = {
   },
 
   async getGraph(documentId: string) {
-    const response = await fetch(`${API_BASE_URL}/documents/${documentId}/graph`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/documents/${documentId}/graph`, {
       headers: await this.getHeaders(),
     })
     return checkResponse(response, "Falha ao buscar grafo")
   },
 
   async getDocumentChunks(documentId: string) {
-    const response = await fetch(`${API_BASE_URL}/documents/${documentId}/chunks`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/documents/${documentId}/chunks`, {
       headers: await this.getHeaders(),
     })
     return checkResponse(response, "Falha ao buscar chunks do documento")
   },
 
   async getDocumentStatus(documentId: string) {
-    const response = await fetch(`${API_BASE_URL}/documents/status/${documentId}`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/status/${documentId}`, {
       headers: await this.getHeaders(),
     })
     return checkResponse(response, "Falha ao obter status do documento")
   },
 
   async chat(message: string, documentId: string) {
-    const response = await fetch(`${API_BASE_URL}/chat`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/chat`, {
       method: "POST",
       headers: await this.getHeaders(),
       body: JSON.stringify({ message, document_id: documentId }),
@@ -173,7 +175,7 @@ export const apiClient = {
   },
 
   async cancelProcessing(documentId: string) {
-    const response = await fetch(`${API_BASE_URL}/cancel/${documentId}`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/cancel/${documentId}`, {
       method: "POST",
       headers: await this.getHeaders(),
     })
@@ -182,7 +184,7 @@ export const apiClient = {
   },
 
   async downloadDocument(documentId: string) {
-    const response = await fetch(`${API_BASE_URL}/documents/${documentId}/download`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/documents/${documentId}/download`, {
       headers: await this.getHeaders(),
     })
 
@@ -297,14 +299,14 @@ export const apiClient = {
   // ============================================
 
   async getDocumentPermissions(documentId: string) {
-    const response = await fetch(`${API_BASE_URL}/documents/${documentId}/permissions`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/documents/${documentId}/permissions`, {
       headers: await this.getHeaders(),
     })
     return checkResponse(response, "Falha ao buscar permissões")
   },
 
   async shareDocument(documentId: string, entityType: 'user' | 'group', entityId: string, permission: 'read' | 'manage') {
-    const response = await fetch(`${API_BASE_URL}/documents/${documentId}/share`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/documents/${documentId}/share`, {
       method: "POST",
       headers: await this.getHeaders(),
       body: JSON.stringify({ entity_type: entityType, entity_id: entityId, permission }),
@@ -313,7 +315,7 @@ export const apiClient = {
   },
 
   async unshareDocument(documentId: string, entityType: string, entityId: string) {
-    const response = await fetch(`${API_BASE_URL}/documents/${documentId}/share/${entityType}/${entityId}`, {
+    const response = await fetch(`${API_BASE_URL}/graph-documents/documents/${documentId}/share/${entityType}/${entityId}`, {
       method: "DELETE",
       headers: await this.getHeaders(),
     })

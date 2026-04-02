@@ -57,7 +57,7 @@ export default function SignupPage() {
           <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
             <Network className="w-6 h-6 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">GraphRAG</h1>
+          <h1 className="text-2xl font-bold text-foreground">CronRag</h1>
         </div>
 
         <Card>

@@ -1,66 +1,66 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Next.js build output
+.next/
+out/
+build/
+
 # Python
 __pycache__/
-.kiro/
 *.py[cod]
 *$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual Environment
-venv/
-ENV/
-env/
-.venv
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Environment (NUNCA commitar .env com secrets!)
-.env
-.env.local
-.env.*.local
-.env.production
-
-# Frontend env
-frontend/.env.local
-frontend/.env.*.local
-frontend/node_modules/*
-
-# Uploads (IMPORTANTE - ignorar arquivos grandes)
-uploads/*
-!uploads/.gitkeep
-
-# Logs
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
 *.log
-logs/
+.hypothesis/
+.pytest_cache/
 
-# Cache
-.cache/
-*.cache
+# Environments
+.env
+.env.test
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
-# Redis
-dump.rdb
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# OS
+# OS Files
 .DS_Store
 Thumbs.db
+
+# IDEs and Editors
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# Miscellaneous
+dist/
+dist-ssr/

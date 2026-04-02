@@ -9,8 +9,8 @@ const geist = Geist({ subsets: ["latin"] })
 const geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "GraphRAG - Busca Inteligente em Documentos",
-  description: "Plataforma de RAG com busca semântica, análise de grafos e chatbot para seus documentos",
+  title: "CronRag - Busca Inteligente em Documentos",
+  description: "Plataforma de RAG e análise de grafos do ecosistema SinCron.IA",
   generator: "v0.app",
   icons: {
     icon: [

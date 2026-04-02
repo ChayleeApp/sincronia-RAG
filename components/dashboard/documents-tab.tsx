@@ -146,6 +146,12 @@ export default function DocumentsTab({ fileInputRef }: DocumentsTabProps) {
       return
     }
 
+    const MAX_FILE_SIZE = 4 * 1024 * 1024 // 4 MB safety limit for Vercel Serverless
+    if (file.size > MAX_FILE_SIZE) {
+      setError(`O arquivo é muito pesado (${(file.size / 1024 / 1024).toFixed(1)} MB). O limite atual é de 4 MB.`)
+      return
+    }
+
     setIsLoading(true)
     setError("")
 
@@ -155,7 +161,13 @@ export default function DocumentsTab({ fileInputRef }: DocumentsTabProps) {
       // Reload documents to show the new one
       await loadDocuments()
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Erro ao fazer upload do documento"
+      let message = err instanceof Error ? err.message : "Erro ao fazer upload do documento"
+
+      // Catch network errors specifically triggered by Vercel 413 blocked requests (CORS missing)
+      if (message.includes("Failed to fetch") || message.includes("NetworkError")) {
+        message = "O servidor recusou a conexão. Isso costuma ocorrer se o arquivo exceder os limites ocultos de rede (como o limite de 4.5MB da Vercel)."
+      }
+
       setError(message)
     } finally {
       setIsLoading(false)
