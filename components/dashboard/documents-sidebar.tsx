@@ -221,7 +221,7 @@ export default function DocumentsSidebar({
                   {pendingFile?.name}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {(pendingFile && pendingFile.size / 1024).toFixed(1)} KB
+                  {pendingFile ? (pendingFile.size / 1024).toFixed(1) : "0"} KB
                 </p>
               </div>
             </div>
