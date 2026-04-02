@@ -214,12 +214,14 @@ export default function DocumentsSidebar({
 
           <div className="space-y-4 py-4">
             {/* File info */}
-            <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+            <div className="flex items-center gap-3 p-3 bg-muted rounded-lg overflow-hidden border border-border">
               <FileText className="w-8 h-8 text-primary flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm break-words">{pendingFile?.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {pendingFile && (pendingFile.size / 1024).toFixed(1)} KB
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <p className="font-medium text-sm break-all leading-tight text-foreground truncate-none">
+                  {pendingFile?.name}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {(pendingFile && pendingFile.size / 1024).toFixed(1)} KB
                 </p>
               </div>
             </div>
