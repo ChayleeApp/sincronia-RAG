@@ -4,18 +4,21 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Brand Colors - Premium Pink/Purple Palette */
-  --brand-50: 330 100% 98%;
-  --brand-100: 330 100% 95%;
-  --brand-200: 330 100% 90%;
-  --brand-300: 330 100% 80%;
-  --brand-400: 330 100% 70%;
-  --brand-500: 330 100% 60%;
-  --brand-600: 330 100% 50%;
-  --brand-700: 330 100% 40%;
-  --brand-800: 330 100% 30%;
-  --brand-900: 330 100% 20%;
-  --brand-950: 330 100% 10%;
+  /* Brand Colors - Sincron.ia Official Palette (Teal/Cyan/Blue) */
+  --brand-50: 180 100% 98%;
+  --brand-100: 180 100% 95%;
+  --brand-200: 180 60% 85%;
+  --brand-300: 180 50% 70%;
+  --brand-400: 180 45% 55%;
+  --brand-500: 180 100% 25%;
+  /* #008080 */
+  --brand-600: 180 100% 20%;
+  --brand-700: 207 61% 33%;
+  /* #205886 */
+  --brand-800: 177 100% 27%;
+  /* #008882 */
+  --brand-900: 180 100% 15%;
+  --brand-950: 180 100% 8%;
 
   /* Neutral Colors */
   --neutral-50: 0 0% 98%;
@@ -37,38 +40,39 @@
   --card-foreground: hsl(0 0% 9%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(0 0% 9%);
-  --primary: hsl(330 100% 50%);
+  --primary: hsl(180 100% 25%);
+  /* Teal */
   --primary-foreground: hsl(0 0% 100%);
   --secondary: hsl(0 0% 96%);
   --secondary-foreground: hsl(0 0% 9%);
   --muted: hsl(0 0% 96%);
   --muted-foreground: hsl(0 0% 45%);
-  --accent: hsl(330 100% 96%);
-  --accent-foreground: hsl(330 100% 20%);
+  --accent: hsl(180 100% 96%);
+  --accent-foreground: hsl(180 100% 15%);
   --destructive: hsl(0 84% 60%);
   --destructive-foreground: hsl(0 0% 98%);
-  
+
   --border: hsl(0 0% 90%);
   --input: hsl(0 0% 90%);
-  --ring: hsl(330 100% 50%);
+  --ring: hsl(180 100% 25%);
   --radius: 0.75rem;
 
   /* Sidebar Colors */
   --sidebar: hsl(0 0% 4%);
   --sidebar-foreground: hsl(0 0% 98%);
-  --sidebar-primary: hsl(330 100% 50%);
+  --sidebar-primary: hsl(180 100% 30%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(0 0% 9%);
+  --sidebar-accent: hsl(180 60% 12%);
   --sidebar-accent-foreground: hsl(0 0% 98%);
   --sidebar-border: hsl(0 0% 15%);
-  --sidebar-ring: hsl(330 100% 50%);
+  --sidebar-ring: hsl(180 100% 30%);
 
-  /* Chart Colors */
-  --chart-1: hsl(330 100% 50%);
-  --chart-2: hsl(142 76% 36%);
-  --chart-3: hsl(199 89% 48%);
-  --chart-4: hsl(38 92% 50%);
-  --chart-5: hsl(271 91% 65%);
+  /* Chart Colors - Using Sincron Palette */
+  --chart-1: hsl(180 100% 25%);
+  --chart-2: hsl(207 61% 33%);
+  --chart-3: hsl(187 100% 42%);
+  --chart-4: hsl(177 100% 27%);
+  --chart-5: hsl(207 40% 45%);
 }
 
 .dark {
@@ -78,36 +82,36 @@
   --card-foreground: hsl(0 0% 98%);
   --popover: hsl(0 0% 9%);
   --popover-foreground: hsl(0 0% 98%);
-  --primary: hsl(330 100% 60%);
+  --primary: hsl(180 100% 40%);
   --primary-foreground: hsl(0 0% 100%);
   --secondary: hsl(0 0% 15%);
   --secondary-foreground: hsl(0 0% 98%);
   --muted: hsl(0 0% 15%);
   --muted-foreground: hsl(0 0% 64%);
-  --accent: hsl(0 0% 15%);
+  --accent: hsl(180 100% 10%);
   --accent-foreground: hsl(0 0% 98%);
   --destructive: hsl(0 63% 31%);
   --destructive-foreground: hsl(0 0% 98%);
-  
+
   --border: hsl(0 0% 15%);
   --input: hsl(0 0% 15%);
-  --ring: hsl(330 100% 60%);
+  --ring: hsl(180 100% 40%);
 
   --sidebar: hsl(0 0% 2%);
   --sidebar-foreground: hsl(0 0% 98%);
-  --sidebar-primary: hsl(330 100% 60%);
+  --sidebar-primary: hsl(180 100% 40%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(0 0% 9%);
+  --sidebar-accent: hsl(180 60% 10%);
   --sidebar-accent-foreground: hsl(0 0% 98%);
   --sidebar-border: hsl(0 0% 15%);
-  --sidebar-ring: hsl(330 100% 60%);
-  
+  --sidebar-ring: hsl(180 100% 40%);
+
   /* Chart Colors */
-  --chart-1: hsl(330 100% 60%);
-  --chart-2: hsl(142 76% 36%);
-  --chart-3: hsl(199 89% 48%);
-  --chart-4: hsl(38 92% 50%);
-  --chart-5: hsl(271 91% 65%);
+  --chart-1: hsl(180 100% 40%);
+  --chart-2: hsl(207 61% 40%);
+  --chart-3: hsl(187 100% 50%);
+  --chart-4: hsl(177 100% 35%);
+  --chart-5: hsl(207 30% 55%);
 }
 
 @theme inline {
@@ -155,6 +159,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -164,6 +169,7 @@
   .delay-100 {
     animation-delay: 100ms;
   }
+
   .delay-200 {
     animation-delay: 200ms;
   }
