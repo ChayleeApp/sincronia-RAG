@@ -1,4 +1,4 @@
-# GraphRAG API v3.1
+### GraphRAG API v3.1
 
 API assíncrona para processamento de documentos com extração de grafo de conhecimento usando LLMs.
 
