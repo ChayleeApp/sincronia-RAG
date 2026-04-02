@@ -129,7 +129,11 @@ export const apiClient = {
   },
 
   async query(query: string, search_type: string = "semantic", document_id?: string) {
-    const body: Record<string, any> = { query, search_type }
+    const response_language = typeof window !== 'undefined'
+      ? localStorage.getItem('rag_response_language') || 'pt'
+      : 'pt'
+
+    const body: Record<string, any> = { query, search_type, response_language }
     if (document_id) {
       body.document_id = document_id
     }
@@ -165,10 +169,14 @@ export const apiClient = {
   },
 
   async chat(message: string, documentId: string) {
+    const response_language = typeof window !== 'undefined'
+      ? localStorage.getItem('rag_response_language') || 'pt'
+      : 'pt'
+
     const response = await fetch(`${API_BASE_URL}/graph-documents/chat`, {
       method: "POST",
       headers: await this.getHeaders(),
-      body: JSON.stringify({ message, document_id: documentId }),
+      body: JSON.stringify({ message, document_id: documentId, response_language }),
     })
 
     return checkResponse(response, "Falha ao processar chat")

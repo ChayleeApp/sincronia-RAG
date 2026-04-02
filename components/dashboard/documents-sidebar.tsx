@@ -21,10 +21,9 @@ interface DocumentsSidebarProps {
 }
 
 const LLM_MODELS = [
-  { value: "claude", label: "Claude" },
-  { value: "openai", label: "OpenAI GPT-4" },
-  { value: "kimi", label: "Moonshot/Kimi" },
-  { value: "deepseek", label: "DeepSeek" },
+  { value: "low", label: "⚡ ChatGPT (GPT-4o Mini) — Rápido e Econômico" },
+  { value: "fast", label: "🚀 Gemini 3.0 Flash — Velocidade Máxima" },
+  { value: "high", label: "🏆 Claude 4.5 Sonnet — Máxima Qualidade" },
 ]
 
 export default function DocumentsSidebar({

@@ -188,7 +188,7 @@ export default function DocumentsTab({ fileInputRef }: DocumentsTabProps) {
     }
   }
 
-  const handleProcessDocument = async (documentId: string, model: string = "claude") => {
+  const handleProcessDocument = async (documentId: string, model: string = "low") => {
     try {
       await apiClient.processDocument(documentId, model, "generic")
       setTimeout(() => loadDocuments(), 1000)

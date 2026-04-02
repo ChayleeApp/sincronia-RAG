@@ -40,7 +40,16 @@ export default function SettingsTab() {
   const [successMessage, setSuccessMessage] = useState("")
   const [copiedEmail, setCopiedEmail] = useState("")
   const [isAdmin, setIsAdmin] = useState(false)
+  const [responseLang, setResponseLang] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('rag_response_language') || 'pt'
+    return 'pt'
+  })
   const { logout } = useAuth()
+
+  const handleLangChange = (lang: string) => {
+    setResponseLang(lang)
+    localStorage.setItem('rag_response_language', lang)
+  }
 
   useEffect(() => {
     loadDocuments()
@@ -211,6 +220,23 @@ export default function SettingsTab() {
               <Button variant="outline" disabled>
                 Alterar Senha (em desenvolvimento)
               </Button>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="response-lang">🌐 Idioma das Respostas da IA</Label>
+              <p className="text-sm text-muted-foreground">A IA traduzirá as respostas para o idioma selecionado, independentemente do idioma do documento.</p>
+              <Select value={responseLang} onValueChange={handleLangChange}>
+                <SelectTrigger id="response-lang">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pt">🇧🇷 Português</SelectItem>
+                  <SelectItem value="en">🇺🇸 English</SelectItem>
+                  <SelectItem value="es">🇪🇸 Español</SelectItem>
+                  <SelectItem value="fr">🇫🇷 Français</SelectItem>
+                  <SelectItem value="de">🇩🇪 Deutsch</SelectItem>
+                  <SelectItem value="it">🇮🇹 Italiano</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="pt-4 border-t border-border">
               <Button
