@@ -121,16 +121,44 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
 
   const selectModelAutomatically = (doc: Document) => {
     // Selecionar modelo baseado no tamanho do arquivo
-    const sizeInMB = doc.size ? parseFloat(doc.size) : 0
+    let sizeInMB = 0
+    
+    if (doc.size) {
+      // Parse do tamanho (ex: "0.13 MB" ou "1.5 MB")
+      const sizeStr = doc.size.toString().toLowerCase()
+      const sizeMatch = sizeStr.match(/(\d+\.?\d*)\s*(mb|kb|gb)?/)
+      
+      if (sizeMatch) {
+        const value = parseFloat(sizeMatch[1])
+        const unit = sizeMatch[2] || 'mb'
+        
+        // Converter para MB
+        if (unit === 'kb') {
+          sizeInMB = value / 1024
+        } else if (unit === 'gb') {
+          sizeInMB = value * 1024
+        } else {
+          sizeInMB = value
+        }
+      }
+    } else if (doc.file_size) {
+      // Se tiver file_size em bytes
+      sizeInMB = doc.file_size / (1024 * 1024)
+    }
+    
+    console.log(`Tamanho do documento: ${sizeInMB.toFixed(2)} MB`)
     
     if (sizeInMB < 1) {
       // Documentos pequenos (< 1MB): modelo rápido
+      console.log("Selecionado: low (GPT-4o Mini)")
       return "low"
     } else if (sizeInMB < 5) {
       // Documentos médios (1-5MB): modelo balanceado
+      console.log("Selecionado: fast (GPT-4o)")
       return "fast"
     } else {
       // Documentos grandes (> 5MB): modelo de alta qualidade
+      console.log("Selecionado: high (GPT-4 Turbo)")
       return "high"
     }
   }
@@ -531,11 +559,29 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                {document?.size && parseFloat(document.size) < 1 
-                  ? "Documento pequeno: modelo rápido e econômico"
-                  : document?.size && parseFloat(document.size) < 5
-                  ? "Documento médio: modelo balanceado"
-                  : "Documento grande: modelo de alta qualidade"}
+                {(() => {
+                  let sizeInMB = 0
+                  if (document?.size) {
+                    const sizeMatch = document.size.toString().toLowerCase().match(/(\d+\.?\d*)\s*(mb|kb|gb)?/)
+                    if (sizeMatch) {
+                      const value = parseFloat(sizeMatch[1])
+                      const unit = sizeMatch[2] || 'mb'
+                      if (unit === 'kb') sizeInMB = value / 1024
+                      else if (unit === 'gb') sizeInMB = value * 1024
+                      else sizeInMB = value
+                    }
+                  } else if (document?.file_size) {
+                    sizeInMB = document.file_size / (1024 * 1024)
+                  }
+                  
+                  if (sizeInMB < 1) {
+                    return `Documento pequeno (${sizeInMB.toFixed(2)} MB): modelo rápido e econômico`
+                  } else if (sizeInMB < 5) {
+                    return `Documento médio (${sizeInMB.toFixed(2)} MB): modelo balanceado`
+                  } else {
+                    return `Documento grande (${sizeInMB.toFixed(2)} MB): modelo de alta qualidade`
+                  }
+                })()}
               </p>
             </div>
           </div>
