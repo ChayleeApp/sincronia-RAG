@@ -35,7 +35,7 @@ export interface Document {
 }
 
 interface DocumentsTabProps {
-  fileInputRef?: RefObject<HTMLInputElement>
+  fileInputRef?: React.RefObject<HTMLInputElement>
 }
 
 export default function DocumentsTab({ fileInputRef }: DocumentsTabProps) {
@@ -212,13 +212,13 @@ export default function DocumentsTab({ fileInputRef }: DocumentsTabProps) {
         </Alert>
       )}
 
-      {/* Toggle Controls Header - Compact */}
-      <div className="flex items-center justify-between px-2 py-1 border-b border-border bg-muted/30 flex-shrink-0">
+      {/* Toggle Controls Header - Always Visible */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-white/[0.08] bg-[#071312]/50 backdrop-blur-sm flex-shrink-0">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setShowLeftPanel(!showLeftPanel)}
-          className="h-7 px-2 gap-1"
+          className="h-8 px-3 gap-2 text-slate-300 hover:text-white hover:bg-white/[0.05] transition-all"
           title={showLeftPanel ? "Ocultar documentos" : "Mostrar documentos"}
         >
           {showLeftPanel ? (
@@ -226,7 +226,7 @@ export default function DocumentsTab({ fileInputRef }: DocumentsTabProps) {
           ) : (
             <PanelLeftOpen className="w-4 h-4" />
           )}
-          <span className="text-xs hidden md:inline">Docs</span>
+          <span className="text-xs font-medium hidden md:inline">Docs</span>
         </Button>
 
         {/* Spacer */}
@@ -236,10 +236,10 @@ export default function DocumentsTab({ fileInputRef }: DocumentsTabProps) {
           variant="ghost"
           size="sm"
           onClick={() => setShowRightPanel(!showRightPanel)}
-          className="h-7 px-2 gap-1"
+          className="h-8 px-3 gap-2 text-slate-300 hover:text-white hover:bg-white/[0.05] transition-all"
           title={showRightPanel ? "Ocultar chat" : "Mostrar chat"}
         >
-          <span className="text-xs hidden md:inline">Chat</span>
+          <span className="text-xs font-medium hidden md:inline">Chat</span>
           {showRightPanel ? (
             <PanelRightClose className="w-4 h-4" />
           ) : (
@@ -265,8 +265,6 @@ export default function DocumentsTab({ fileInputRef }: DocumentsTabProps) {
                   onSelectDocument={handleSelectDocument}
                   onRefresh={loadDocuments}
                   onUpload={handleFileUpload}
-                  onDelete={handleDeleteDocument}
-                  onProcess={handleProcessDocument}
                   isLoading={isLoading}
                   fileInputRef={fileInputRef}
                 />
@@ -284,6 +282,7 @@ export default function DocumentsTab({ fileInputRef }: DocumentsTabProps) {
               document={selectedDocument}
               onProcess={handleProcessDocument}
               onDelete={handleDeleteDocument}
+              onRefresh={loadDocuments}
               onViewGraph={(doc) => {
                 setSelectedDocForGraph(doc)
                 setGraphViewerOpen(true)

@@ -4,6 +4,23 @@ import { type ReactNode, useState, useEffect } from "react"
 import { AuthContext } from "@/lib/auth-context"
 import { apiClient } from "@/lib/api-client"
 
+// Função para validar se o token JWT está expirado
+function isTokenExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const exp = payload.exp
+    
+    if (!exp) return true
+    
+    // Verifica se o token expira em menos de 30 segundos (margem de segurança)
+    const now = Math.floor(Date.now() / 1000)
+    return exp < (now + 30)
+  } catch (err) {
+    console.error("Erro ao validar token:", err)
+    return true
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -18,8 +35,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const storedToken = localStorage.getItem("api_token")
       if (storedToken) {
-        setToken(storedToken)
-        apiClient.setToken(storedToken)
+        // Valida se o token está expirado antes de usar
+        if (isTokenExpired(storedToken)) {
+          console.log("Token expirado, limpando storage")
+          localStorage.removeItem("api_token")
+          localStorage.removeItem("username")
+          document.cookie = "api_token=; path=/; max-age=0"
+          apiClient.clearToken()
+        } else {
+          setToken(storedToken)
+          apiClient.setToken(storedToken)
+        }
       }
     } catch (err) {
       console.error("Failed to access localStorage:", err)

@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { apiClient } from "@/lib/api-client"
 import ShareDialog from "@/components/dashboard/share-dialog"
 import {
@@ -40,6 +41,12 @@ interface Document {
   can_download?: boolean
   can_delete?: boolean
   can_share?: boolean
+  summary?: string
+  file_size?: number
+  file_hash?: string
+  processing_started_at?: string
+  processing_completed_at?: string
+  updated_at?: string
 }
 
 interface DocumentViewerProps {
@@ -47,6 +54,7 @@ interface DocumentViewerProps {
   onProcess?: (documentId: string, model: string) => void
   onViewGraph?: (document: Document) => void
   onDelete?: (documentId: string) => void
+  onRefresh?: () => void
 }
 
 const LLM_MODELS = [
@@ -55,7 +63,7 @@ const LLM_MODELS = [
   { value: "high", label: "🏆 Claude 4.5 Sonnet — Máxima Qualidade" },
 ]
 
-export default function DocumentViewer({ document, onProcess, onViewGraph, onDelete }: DocumentViewerProps) {
+export default function DocumentViewer({ document, onProcess, onViewGraph, onDelete, onRefresh }: DocumentViewerProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [content, setContent] = useState<string>("")
   const [summary, setSummary] = useState<string>("")
@@ -67,6 +75,7 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
   const [isCancelling, setIsCancelling] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
+  const [contentView, setContentView] = useState<"full" | "chunks">("full") // Estado para controlar a visualização
 
   // Process modal state
   const [processModalOpen, setProcessModalOpen] = useState(false)
@@ -88,13 +97,23 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
     setError("")
     try {
       const result = await apiClient.getDocumentChunks(documentId)
+      console.log("Resultado do getDocumentChunks:", result)
       setContent(result.full_text || "")
-      setSummary(result.summary || "")
+      setSummary(result.summary && result.summary.toLowerCase() !== 'not found' ? result.summary : "")
       setChunks(result.chunks || [])
       setActiveChunk(0)
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro ao carregar documento"
-      setError(message)
+      console.error("Erro ao carregar documento:", err)
+      // Se for erro 404, não mostra o resumo
+      if (message.includes("Not Found") || message.includes("404")) {
+        setContent("")
+        setSummary("")
+        setChunks([])
+        setError("") // Não mostra erro de 404 para o usuário
+      } else {
+        setError(message)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -117,9 +136,14 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
     setIsCancelling(true)
     try {
       await apiClient.cancelProcessing(document.document_id)
-      window.location.reload() // Refresh to update status
+      // Atualizar o estado sem recarregar a página
+      if (onRefresh) {
+        onRefresh()
+      }
     } catch (err) {
       console.error("Erro ao cancelar:", err)
+      const message = err instanceof Error ? err.message : "Erro ao cancelar processamento"
+      setError(message)
     } finally {
       setIsCancelling(false)
     }
@@ -368,12 +392,14 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
               <div className="space-y-4">
                 {/* Resumo do Documento */}
                 <Card>
-                  <CardHeader className="pb-2">
+                  <CardHeader className="pb-3">
                     <CardTitle className="text-base">Resumo do Documento</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-                      {summary || (
+                    <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed max-h-[400px] overflow-y-auto">
+                      {summary ? (
+                        summary
+                      ) : (
                         <span className="text-muted-foreground italic">
                           Resumo não disponível. Reprocesse o documento para gerar um resumo automático.
                         </span>
@@ -382,109 +408,53 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
                   </CardContent>
                 </Card>
 
-                {/* Chunks Slider */}
-                {chunks.length > 0 && (
+                {/* Conteúdo do Documento - Abas para Texto Completo ou Chunks */}
+                {(content || chunks.length > 0) && (
                   <Card>
                     <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-base">Chunks do Documento</CardTitle>
-                        <span className="text-sm text-muted-foreground">
-                          {activeChunk + 1} de {chunks.length}
-                        </span>
-                      </div>
+                      <CardTitle className="text-base">Conteúdo do Documento</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {/* Navigation */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => setActiveChunk(prev => Math.max(0, prev - 1))}
-                          disabled={activeChunk === 0}
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </Button>
-
-                        {/* Chunk dots */}
-                        <div className="flex-1 flex justify-center gap-1 overflow-x-auto py-1">
-                          {chunks.slice(Math.max(0, activeChunk - 3), Math.min(chunks.length, activeChunk + 4)).map((_, idx) => {
-                            const realIndex = idx + Math.max(0, activeChunk - 3)
-                            return (
-                              <button
-                                key={realIndex}
-                                onClick={() => setActiveChunk(realIndex)}
-                                className={`w-2 h-2 rounded-full transition-all ${realIndex === activeChunk
-                                  ? "bg-primary w-4"
-                                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                                  }`}
-                              />
-                            )
-                          })}
-                        </div>
-
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => setActiveChunk(prev => Math.min(chunks.length - 1, prev + 1))}
-                          disabled={activeChunk === chunks.length - 1}
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
-
-                      {/* Chunk Content */}
-                      <div className="bg-muted/50 rounded-lg p-4 min-h-[200px] max-h-[300px] overflow-y-auto">
-                        <div className="text-xs text-muted-foreground mb-2">
-                          Chunk #{chunks[activeChunk]?.seq_id ?? activeChunk}
-                        </div>
-                        <div className="text-sm whitespace-pre-wrap">
-                          {chunks[activeChunk]?.text || "Sem conteúdo"}
-                        </div>
-                      </div>
+                      <Tabs value={contentView} onValueChange={(v) => setContentView(v as "full" | "chunks")} className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 mb-4">
+                          <TabsTrigger value="full">Texto Completo</TabsTrigger>
+                          <TabsTrigger value="chunks">Chunks ({chunks.length})</TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="full" className="mt-0">
+                          <div className="bg-muted/50 rounded-lg p-4 min-h-[300px] max-h-[500px] overflow-y-auto">
+                            <div className="text-sm whitespace-pre-wrap leading-relaxed">
+                              {content || (
+                                <span className="text-muted-foreground italic">
+                                  Texto completo não disponível.
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="chunks" className="mt-0">
+                          <div className="bg-muted/50 rounded-lg p-4 min-h-[300px] max-h-[500px] overflow-y-auto">
+                            <div className="space-y-4">
+                              {chunks.map((chunk) => (
+                                <div key={chunk.id} className="border-b border-border/50 pb-4 last:border-0 last:pb-0">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Badge variant="outline" className="text-xs">
+                                      Chunk #{chunk.seq_id}
+                                    </Badge>
+                                  </div>
+                                  <div className="text-sm whitespace-pre-wrap leading-relaxed">
+                                    {chunk.text}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </TabsContent>
+                      </Tabs>
                     </CardContent>
                   </Card>
                 )}
-
-                {/* Document Statistics */}
-                <Card className="mt-4">
-                  <CardHeader>
-                    <CardTitle>Estatísticas</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">Tamanho</p>
-                        <p className="font-medium">{document.size || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Data de Upload</p>
-                        <p className="font-medium">
-                          {new Date(document.created_at).toLocaleString("pt-BR")}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Status</p>
-                        <p className="font-medium">{getStatusLabel(document.status)}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Modelo LLM</p>
-                        <p className="font-medium">{document.model?.toUpperCase() || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Chunks</p>
-                        <p className="font-medium text-blue-600">{document.chunks ?? "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Entidades</p>
-                        <p className="font-medium text-green-600">{document.entities ?? "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Relacionamentos</p>
-                        <p className="font-medium text-purple-600">{document.relationships ?? "—"}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
             ) : (
               <Alert>

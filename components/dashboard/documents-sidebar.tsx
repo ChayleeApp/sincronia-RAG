@@ -17,7 +17,7 @@ interface DocumentsSidebarProps {
   onRefresh: () => void
   onUpload: (file: File) => Promise<void>
   isLoading: boolean
-  fileInputRef: React.RefObject<HTMLInputElement>
+  fileInputRef?: React.RefObject<HTMLInputElement>
 }
 
 const LLM_MODELS = [
