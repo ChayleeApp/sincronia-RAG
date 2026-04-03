@@ -35,15 +35,13 @@ interface Document {
 
 // Mapeamento de modelos simplificados para nomes completos
 const MODEL_NAME_MAP: Record<string, string> = {
-  'low': 'ChatGPT 4.1 mini',
-  'high': 'ChatGPT 4.1',
-  'gpt-4o-mini': 'ChatGPT 4.1 mini',
-  'gpt-4o': 'ChatGPT 4.1',
-  'gpt-4-turbo': 'ChatGPT 4 Turbo',
-  'gpt-3.5-turbo': 'ChatGPT 3.5 Turbo',
-  'claude-3-haiku': 'Claude 3 Haiku',
-  'claude-3-sonnet': 'Claude 3 Sonnet',
-  'claude-3-opus': 'Claude 3 Opus',
+  'low': 'GPT-4o Mini',
+  'fast': 'GPT-4o',
+  'high': 'GPT-4 Turbo',
+  'gpt-4o-mini': 'GPT-4o Mini',
+  'gpt-4o': 'GPT-4o',
+  'gpt-4-turbo': 'GPT-4 Turbo',
+  'gpt-3.5-turbo': 'GPT-3.5 Turbo',
 }
 
 interface ChatSidebarProps {

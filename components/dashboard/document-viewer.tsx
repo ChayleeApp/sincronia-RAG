@@ -58,9 +58,9 @@ interface DocumentViewerProps {
 }
 
 const LLM_MODELS = [
-  { value: "low", label: "⚡ ChatGPT (GPT-4o Mini) — Rápido e Econômico" },
-  { value: "fast", label: "🚀 Gemini 3.0 Flash — Velocidade Máxima" },
-  { value: "high", label: "🏆 Claude 4.5 Sonnet — Máxima Qualidade" },
+  { value: "low", label: "⚡ GPT-4o Mini — Rápido e Econômico" },
+  { value: "fast", label: "🚀 GPT-4o — Balanceado" },
+  { value: "high", label: "🏆 GPT-4 Turbo — Máxima Qualidade" },
 ]
 
 export default function DocumentViewer({ document, onProcess, onViewGraph, onDelete, onRefresh }: DocumentViewerProps) {
@@ -116,6 +116,22 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
       }
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const selectModelAutomatically = (doc: Document) => {
+    // Selecionar modelo baseado no tamanho do arquivo
+    const sizeInMB = doc.size ? parseFloat(doc.size) : 0
+    
+    if (sizeInMB < 1) {
+      // Documentos pequenos (< 1MB): modelo rápido
+      return "low"
+    } else if (sizeInMB < 5) {
+      // Documentos médios (1-5MB): modelo balanceado
+      return "fast"
+    } else {
+      // Documentos grandes (> 5MB): modelo de alta qualidade
+      return "high"
     }
   }
 
@@ -250,7 +266,11 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
               <Button
                 variant={document.status === "Completed" ? "outline" : "default"}
                 size="sm"
-                onClick={() => setProcessModalOpen(true)}
+                onClick={() => {
+                  const autoModel = selectModelAutomatically(document)
+                  setSelectedModel(autoModel)
+                  setProcessModalOpen(true)
+                }}
                 disabled={isProcessing}
               >
                 {isProcessing ? (
@@ -482,33 +502,40 @@ export default function DocumentViewer({ document, onProcess, onViewGraph, onDel
         </ScrollArea>
       </div>
 
-      {/* Process Modal with Model Selection */}
+      {/* Process Modal - Auto Model Selection */}
       <Dialog open={processModalOpen} onOpenChange={setProcessModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Processar Documento</DialogTitle>
             <DialogDescription>
-              Selecione o modelo LLM para processar este documento.
+              O sistema selecionará automaticamente o melhor modelo baseado no tamanho do documento.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="model-select">Modelo LLM</Label>
-              <Select value={selectedModel} onValueChange={setSelectedModel}>
-                <SelectTrigger id="model-select">
-                  <SelectValue placeholder="Selecione o modelo" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LLM_MODELS.map((model) => (
-                    <SelectItem key={model.value} value={model.value}>
-                      {model.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label>Modelo Recomendado</Label>
+              <div className="p-3 bg-muted rounded-lg">
+                <div className="flex items-center gap-2">
+                  <div className="text-2xl">
+                    {selectedModel === "low" ? "⚡" : selectedModel === "fast" ? "🚀" : "🏆"}
+                  </div>
+                  <div>
+                    <p className="font-medium">
+                      {LLM_MODELS.find(m => m.value === selectedModel)?.label.split(" — ")[0]}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {LLM_MODELS.find(m => m.value === selectedModel)?.label.split(" — ")[1]}
+                    </p>
+                  </div>
+                </div>
+              </div>
               <p className="text-xs text-muted-foreground">
-                O modelo escolhido será usado para extrair o grafo de conhecimento.
+                {document?.size && parseFloat(document.size) < 1 
+                  ? "Documento pequeno: modelo rápido e econômico"
+                  : document?.size && parseFloat(document.size) < 5
+                  ? "Documento médio: modelo balanceado"
+                  : "Documento grande: modelo de alta qualidade"}
               </p>
             </div>
           </div>
